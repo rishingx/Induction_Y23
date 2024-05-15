@@ -9,9 +9,6 @@ import configparser
 
 # === GLOBAL VARIABLES === #
 
-# Variables to store username & config file of current user
-curr_config = ""
-
 # Variable to store current working directory
 curr_wd = "./"
 config = configparser.ConfigParser()
@@ -56,10 +53,11 @@ def check_root(username):
 # === SENDING AND RECEIVING FILES === #
 
 def send_file(file_path, client):
-    pass
+    with open(file_path, 'rb') as file:
+        content = file.read()
+        client.send(content)
 
 def recv_file(file_path, client):
-    print("Will store the chunks at:", file_path)
     with open(file_path, 'wb') as file:
         content = client.recv(1024)
         file.write(content)
@@ -113,6 +111,9 @@ def LIST(arg_list, client):
     return result.stdout.decode()
 
 def RETR(arg_list, client):
+    file_name = arg_list[0].split("/")[-1]
+    file_path = curr_wd + file_name
+    send_file(file_path, client)
     return "file sent"
 
 def STOR(arg_list, client):
@@ -136,7 +137,7 @@ def ADDUSER(arg_list, client):
     new_config['credentials'] = {'username': username, 'password': password}
     new_config['security'] = {'root': 'false', 'banned': 'false'}
 
-    with open(get_config_file(username), 'w') as config_file:
+    with open(new_config_file, 'w') as config_file:
         new_config.write(config_file)
 
     return f"Added user {username}!\n"

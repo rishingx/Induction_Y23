@@ -2,9 +2,7 @@ import sys
 import socket
 import threading
 
-
 # === GLOBALLY START THE CLIENT === #
-
 
 # Create a socket object for the client
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,8 +24,9 @@ def send_file(file_path, client):
         client.send(content)
 
 def recv_file(file_path, client):
-    pass
-
+    with open(file_path, 'wb') as file:
+        content = client.recv(1024)
+        file.write(content)
 
 def message_parser(message):
     words = message.split(" ")
@@ -44,10 +43,15 @@ def send_message():
 
         if command == "STOR":
             file_path = arguments[0]
-            print(file_path)
             send_file(file_path, client)
 
+        if command == "RETR":
+            file_path = arguments[0]
+            recv_file(file_path, client)
+
         if command == "QUIT":
+            quit_msg = client.recv(1024).decode()
+            print(quit_msg)
             client.close()
             sys.exit(0)
         
