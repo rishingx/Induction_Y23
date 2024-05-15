@@ -13,7 +13,7 @@ import configparser
 curr_config = ""
 
 # Variable to store current working directory
-curr_wd = "/home/rishi/server/"
+curr_wd = "./"
 config = configparser.ConfigParser()
 
 # === UTILITY FUNCTIONS === #
